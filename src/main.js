@@ -414,7 +414,10 @@ let trajChart = null;
      - The goal line is the USER'S OWN target, framed as such.
    =========================================================================== */
 
-const PROJ_MONTHS = 12;     // dashed status-quo continuation horizon
+const PROJ_MONTHS_DEFAULT = 12;   // default dashed status-quo continuation horizon
+const PROJ_MONTHS_CAP = 60;       // hard ceiling for the "to goal year" horizon
+let PROJ_MONTHS = PROJ_MONTHS_DEFAULT;   // recomputed per render from projHorizonMode
+let projHorizonMode = 'fixed';    // 'fixed' (12 mo) | 'goal' (extend to userGoal.year)
 const RAMP_MONTHS = 3;      // months for an abatement lever to phase to full effect
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -575,6 +578,14 @@ function renderTrajectory(f) {
   const lastIdxObs = [...obsData].map((v, i) => (v != null ? i : -1)).filter(i => i >= 0).pop();
   const haveAnchor = lastIdxObs != null && lastIdxObs >= 0;
 
+  // projection horizon: 12 mo by default, or out to the goal year when that mode is
+  // selected and a goal exists (capped) so the goal endpoint stays visible.
+  PROJ_MONTHS = PROJ_MONTHS_DEFAULT;
+  if (projHorizonMode === 'goal' && userGoal && haveAnchor) {
+    PROJ_MONTHS = Math.max(1, Math.min(PROJ_MONTHS_CAP,
+      monthsBetween(obsLabels[lastIdxObs], `${userGoal.year}-12`)));
+  }
+
   // future month labels
   const futureLabels = [];
   if (haveAnchor) {
@@ -622,7 +633,7 @@ function renderTrajectory(f) {
       const s = j - anchorIdx;                       // months ahead
       const pv = anchorVal + slope * s;              // status-quo projection
       proj[j] = pv;
-      const hw = resStd + Math.max(resStd * 0.3, 1.6) * s;   // band widens with time
+      const BAND_K = 0.6; const hw = resStd * Math.sqrt(s) * BAND_K;   // band widens with √time
       bandLo[j] = pv - hw; bandHi[j] = pv + hw;
 
       if (anyLever) {
@@ -649,6 +660,9 @@ function renderTrajectory(f) {
     // uncertainty band (lower drawn first, upper fills down to it)
     { ...mkLine('band-lo', bandLo, 'transparent', { order: 9 }), pointHitRadius: 0 },
     { ...mkLine('Uncertainty band', bandHi, 'transparent', { order: 9, fill: '-1' }), backgroundColor: BAND, pointHitRadius: 0 },
+    // measured background / clean-reference column (flat, dotted) — drawn beneath the observed line
+    mkLine('Background · measured clean reference', new Array(N).fill(bkgd), css('--ink-3'),
+      { w: 1.5, dash: [2, 3], t: 0, order: 6 }),
     // status-quo projection (dashed)
     mkLine('Projection · status-quo', proj, css('--amber-soft'), { dash: [6, 5], order: 4 }),
     // observed (solid, on top)
@@ -678,7 +692,7 @@ function renderTrajectory(f) {
         },
         plugins: {
           legend: { display: false },
-          tooltip: { backgroundColor: '#0C1116', borderColor: css('--line'), borderWidth: 1, titleColor: css('--text'), bodyColor: css('--muted'),
+          tooltip: { backgroundColor: '#FFFFFF', borderColor: css('--line'), borderWidth: 1, titleColor: css('--text'), bodyColor: css('--text'),
             titleFont: { family: 'IBM Plex Mono', size: 11 }, bodyFont: { family: 'IBM Plex Mono', size: 11 }, padding: 10,
             filter: c => !HIDE_IN_TIP.has(c.dataset.label),
             callbacks: { label: c => c.parsed.y == null ? '' : ` ${c.dataset.label}: ${c.parsed.y.toFixed(1)} ppb` } }
@@ -858,6 +872,18 @@ goalClearBtn?.addEventListener('click', () => {
   if (currentTrajFacility) renderTrajectory(currentTrajFacility);
 });
 
+// Projection-horizon toggle: 12 mo (default) vs. extend out to the goal year.
+document.querySelectorAll('.hz-opt').forEach(btn =>
+  btn.addEventListener('click', () => {
+    projHorizonMode = btn.dataset.horizon;
+    document.querySelectorAll('.hz-opt').forEach(b => {
+      const on = b === btn;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    if (currentTrajFacility) renderTrajectory(currentTrajFacility);
+  }));
+
 // --- "Ask Aletheia": grounded, read-only chat. getContext() returns the LIVE
 // facility view-model + on-page scenario state, so answers always reflect the
 // current selection, active levers and goal — and nothing else. ---
@@ -871,6 +897,31 @@ askApi = initAskAletheia({
       projMonths: PROJ_MONTHS,
     },
   }),
+});
+
+// Ask Aletheia drawer: floating launcher <-> right-docked overlay panel.
+// initAskAletheia is untouched — we only drive open/close + the launcher visibility,
+// and let the existing #askToggle handler reveal + greet the body on first open.
+const askFab = document.getElementById('askFab');
+const askCloseBtn = document.getElementById('askClose');
+const askDrawer = document.getElementById('askPanel');
+const askToggleEl = document.getElementById('askToggle');
+const askBodyEl = document.getElementById('askBody');
+function openAskDrawer() {
+  askDrawer?.classList.add('open');
+  askDrawer?.setAttribute('aria-hidden', 'false');
+  if (askFab) askFab.hidden = true;
+  if (askBodyEl?.hidden && askToggleEl) askToggleEl.click();   // reveal + greet (unchanged logic)
+}
+function closeAskDrawer() {
+  askDrawer?.classList.remove('open');
+  askDrawer?.setAttribute('aria-hidden', 'true');
+  if (askFab) askFab.hidden = false;
+}
+askFab?.addEventListener('click', openAskDrawer);
+askCloseBtn?.addEventListener('click', closeAskDrawer);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && askDrawer?.classList.contains('open')) closeAskDrawer();
 });
 
 // Render the default selection so the report is populated before any pin click.
