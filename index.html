@@ -8,7 +8,7 @@
     <!-- Type system: IBM Plex superfamily — serif headings, sans body, mono for data only -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div id="app">
@@ -24,7 +24,10 @@
         <!-- Persistent top nav: wordmark + Login (enters the platform) -->
         <nav class="landing-nav">
           <span class="landing-nav-mark">ALETHEIA</span>
-          <button class="primary-btn outline js-goto-pillars landing-login">Login</button>
+          <div style="display:flex; gap:12px; align-items:center;">
+            <button class="theme-toggle" aria-label="Toggle theme">☀️</button>
+            <button class="primary-btn outline js-goto-pillars landing-login">Login</button>
+          </div>
         </nav>
 
         <div class="carousel" id="carousel">
@@ -52,7 +55,7 @@
                    a looping <video class="lslide-media" autoplay muted loop playsinline>
                    later — same class + object-fit, NO layout change. -->
               <div class="lslide-bg" data-swappable>
-                <img class="lslide-media" src="/hero.png" alt="Refinery at dusk with an adjacent wind farm" />
+                <video class="lslide-media" src="/hero.mp4" autoplay muted loop playsinline poster="/hero.png"></video>
               </div>
               <div class="lslide-fx" aria-hidden="true">
                 <div class="fx-wash"></div>
@@ -153,6 +156,7 @@
             <h1>Aletheia Dashboard</h1>
           </div>
           <div class="header-controls">
+            <button class="theme-toggle" aria-label="Toggle theme" style="background:transparent; border:none; cursor:pointer; font-size:16px;">☀️</button>
             <span class="status-indicator online"></span>
             <span>Authenticated</span>
           </div>

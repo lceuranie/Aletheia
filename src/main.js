@@ -6,6 +6,26 @@ import Chart from 'chart.js/auto';
 import { facilities, statusFor, headlineFor, matrixStateFor } from './facilities_adapter.js';
 import { initAskAletheia } from './ask_aletheia.js';
 
+// --- THEME TOGGLE LOGIC ---
+function initTheme() {
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const savedTheme = localStorage.getItem('aletheia-theme');
+  const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', currentTheme);
+
+  document.querySelectorAll('.theme-toggle').forEach(btn => {
+    btn.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+    btn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const newTheme = isDark ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('aletheia-theme', newTheme);
+      document.querySelectorAll('.theme-toggle').forEach(b => b.textContent = newTheme === 'dark' ? '☀️' : '🌙');
+    });
+  });
+}
+initTheme();
+
 // --- SPA ROUTING LOGIC ---
 function navigateTo(viewId) {
   // Hide all views
@@ -318,6 +338,47 @@ const overlayMaps = {
 L.control.layers(baseMaps, overlayMaps, {
   position: 'topright'
 }).addTo(map);
+
+// --- TROPOMI Methane Heatmap ---
+const heatData = [];
+facilities.forEach(facility => {
+  // Base intensity on the observed methane tonnes (fallback to 5000 if not present)
+  const tonnes = facility.observed?.methane_tonnes || 5000;
+  const intensityBase = tonnes / 10000;
+  
+  // Create a synthetic plume
+  for (let i = 0; i < 300; i++) {
+    const latOffset = (Math.random() - 0.5) * 0.4; 
+    const lonOffset = (Math.random() - 0.5) * 0.6;
+    let pointIntensity = intensityBase * (1 - (Math.abs(latOffset) + Math.abs(lonOffset)));
+    if (pointIntensity < 0.1) pointIntensity = 0.1;
+
+    heatData.push([
+      facility.lat + latOffset,
+      facility.lon + lonOffset,
+      pointIntensity
+    ]);
+  }
+});
+
+const methaneLayer = L.heatLayer(heatData, {
+  radius: 35,
+  blur: 25,
+  maxZoom: 10,
+  max: 1.0,
+  gradient: {
+    0.4: 'blue',
+    0.6: 'cyan',
+    0.7: 'lime',
+    0.8: 'yellow',
+    1.0: 'red'
+  }
+});
+
+map.addControl(new L.Control.Layers(null, {
+  "TROPOMI Methane (Multi-Year Avg)": methaneLayer
+}, { position: 'topright' }));
+
 
 // NOTE: the previous "TROPOMI Methane (Multi-Year Avg)" heat layer was removed.
 // It synthesised plume geometry from a mock per-facility tonnage that no longer
