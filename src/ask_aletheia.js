@@ -300,9 +300,19 @@ export function initAskAletheia({ getContext }) {
     ask(v);
   });
 
+  let lastFacilityName = null;
   function refresh() {
     const { f } = getContext() || {};
     if (groundEl && f) groundEl.textContent = `Grounded on: ${f.name} · ${f.basisLabel}`;
+    // When the facility changes, the prior greeting is stale: reset the log so the next
+    // greet() reflects the new facility, and re-greet immediately if the body is open.
+    const name = f ? f.name : null;
+    if (name !== lastFacilityName) {
+      lastFacilityName = name;
+      log.innerHTML = '';
+      delete log.dataset.greeted;
+      if (!body.hidden) { greet(); log.dataset.greeted = '1'; }
+    }
   }
   refresh();
   return { refresh };

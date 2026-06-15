@@ -854,25 +854,37 @@ function renderReport(f) {
       : 'Methane is elevated with little or no detected flaring — gas may be escaping uncombusted.';
   }
 
-  // --- Output 2: NO2 / CO co-pollutant columns (facility only; basin -> N/A) ---
-  const xind = document.getElementById('rep-xind');
-  const o2v = document.getElementById('rep-o2-verdict');
-  const o2s = document.getElementById('rep-o2-sub');
+  // --- Output 2: co-pollutant & combustion-signal inventory (honest per-row status) ---
+  const xind  = document.getElementById('rep-xind');
+  const o2v   = document.getElementById('rep-o2-verdict');
+  const o2s   = document.getElementById('rep-o2-sub');
   const xconc = document.getElementById('rep-xconc');
+
+  const expo = v => (v != null ? `${v.toExponential(2)} mol/m²` : '—');
+  const gRow = (gas, sensor, value, cls) =>
+    `<div class="grow"><span class="gname">${gas}</span>` +
+    `<span class="gsensor">${sensor}</span>` +
+    `<span class="gstate ${cls}">${value}</span></div>`;
+
+  xind.innerHTML = [
+    gRow('CH₄', 'TROPOMI XCH₄', f.siteCh4 != null ? `${f.siteCh4.toFixed(1)} ppb` : 'retrieved', 'ok'),
+    gRow('Flaring', 'VIIRS Nightfire', f.flaringBcm != null ? `${f.flaringBcm} BCM/yr` : '—', 'ok'),
+    f.isBasin ? gRow('NO₂', 'TROPOMI', 'N/A · basin method', 'na')
+              : gRow('NO₂', 'TROPOMI', expo(f.no2), 'ok'),
+    f.isBasin ? gRow('CO',  'TROPOMI', 'N/A · basin method', 'na')
+              : gRow('CO',  'TROPOMI', expo(f.co), 'ok'),
+    gRow('SO₂',  'TROPOMI', 'not yet ingested', 'planned'),
+    gRow('HCHO', 'TROPOMI', 'not yet ingested', 'planned'),
+  ].join('');
+
   if (f.isBasin) {
-    xind.innerHTML =
-      `<div class="xrow"><span class="xname">NO₂</span><span></span><span class="xstate na">N/A · basin method</span></div>` +
-      `<div class="xrow"><span class="xname">CO</span><span></span><span class="xstate na">N/A · basin method</span></div>`;
-    o2v.innerHTML = `Not retrieved for a <span class="em-amber">basin</span> snapshot.`;
-    o2s.textContent = 'NO₂ / CO co-pollutant columns are only retrieved for point-facility snapshots.';
-    xconc.textContent = 'A basin enhancement is assessed against a clean reference region; per-pixel NO₂/CO attribution is not part of this method, so these are shown as N/A rather than invented.';
+    o2v.innerHTML = `Co-pollutant inventory · <span class="em-amber">basin</span> snapshot.`;
+    o2s.textContent = 'CH₄ and flaring are retrieved; NO₂ / CO need the point-facility method.';
+    xconc.innerHTML = 'A basin enhancement is assessed against a clean reference region; per-pixel NO₂/CO attribution is not part of this method, so they are shown as <b>N/A</b> rather than invented. SO₂ and HCHO are in the TROPOMI suite but <b>not yet ingested</b> into our pipeline.';
   } else {
-    xind.innerHTML =
-      `<div class="xrow"><span class="xname">NO₂</span><span></span><span class="xstate">${f.no2.toExponential(2)} mol/m²</span></div>` +
-      `<div class="xrow"><span class="xname">CO</span><span></span><span class="xstate">${f.co.toExponential(2)} mol/m²</span></div>`;
-    o2v.innerHTML = `Co-pollutant columns <span class="em-green">measured</span>.`;
-    o2s.textContent = 'NO₂ and CO column densities retrieved over the site.';
-    xconc.innerHTML = 'These are absolute satellite column readings. We deliberately do <b>not</b> label them “elevated” or “normal”: that needs a calibrated per-site baseline we don’t have yet, and inventing one would breach our own honesty rule.';
+    o2v.innerHTML = `Co-pollutant inventory · <span class="em-green">facility</span> snapshot.`;
+    o2s.textContent = 'CH₄, flaring, NO₂ and CO retrieved over the site.';
+    xconc.innerHTML = 'NO₂ and CO are absolute satellite column readings — we deliberately do <b>not</b> label them “elevated” without a calibrated per-site baseline, since inventing one would breach our honesty rule. SO₂ and HCHO are in the TROPOMI suite but <b>not yet ingested</b> into our pipeline.';
   }
 
   // --- Output 3: observed vs background readout (NOT obs-vs-reported) ---
@@ -1010,6 +1022,25 @@ askCloseBtn?.addEventListener('click', closeAskDrawer);
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && askDrawer?.classList.contains('open')) closeAskDrawer();
 });
+
+// Scope the chat launcher to the facility report only: it should never appear on the
+// landing page or the pillar launchpad, only while the report modal is open.
+if (askFab) askFab.hidden = true;
+const reportModal = document.getElementById('aletheia-report-modal');
+if (reportModal) {
+  const syncAskFabToModal = () => {
+    const modalOpen = reportModal.classList.contains('open');
+    if (!modalOpen) {
+      closeAskDrawer();             // tuck the drawer away when leaving the report
+      if (askFab) askFab.hidden = true;
+    } else if (askFab) {
+      askFab.hidden = askDrawer?.classList.contains('open') ? true : false;
+    }
+  };
+  new MutationObserver(syncAskFabToModal)
+    .observe(reportModal, { attributes: true, attributeFilter: ['class'] });
+  syncAskFabToModal();
+}
 
 // Render the default selection so the report is populated before any pin click.
 renderReport(selectedFacility);

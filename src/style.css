@@ -253,11 +253,13 @@ html, body {
 .panel-content {
   padding: 1.5rem;
   overflow-y: auto;
+  overflow-x: hidden;
   flex-grow: 1;
 }
 
 .meta-info {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
 }

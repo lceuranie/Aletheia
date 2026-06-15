@@ -17,7 +17,7 @@
         <div class="intro-logo" style="width: 100%; margin-bottom: 24px;">
           <img src="/aletheia_logo_on_light.svg?v=3" alt="Aletheia Logo" style="width: 60vw; min-width: 600px; height: auto;">
         </div>
-        <p class="intro-tagline" style="visibility:hidden;">what disclosure conceals, satellites reveal.</p>
+        <p class="intro-tagline" style="visibility:hidden;">Aletheia delivers decision intelligence, fusing satellite and ground data for predictable, sustainable operations.</p>
         <div class="intro-actions" style="visibility:hidden;">
           <button class="primary-btn">Enter platform</button>
         </div>
@@ -38,7 +38,6 @@
         <nav class="landing-nav">
           <span class="landing-nav-mark">ALETHEIA</span>
           <div style="display:flex; gap:12px; align-items:center;">
-            <button class="theme-toggle" aria-label="Toggle theme">☀️</button>
             <button class="primary-btn outline js-goto-pillars landing-login">Login</button>
           </div>
         </nav>
@@ -55,7 +54,7 @@
                 <div class="intro-logo" data-swappable style="width: 100%; margin-bottom: 24px;">
                   <img src="/aletheia_logo_on_light.svg?v=3" alt="Aletheia Logo" style="width: 60vw; min-width: 600px; height: auto; filter: invert(1) brightness(1.5);">
                 </div>
-                <p class="intro-tagline">what disclosure conceals, satellites reveal.</p>
+                <p class="intro-tagline">Aletheia delivers decision intelligence, fusing satellite and ground data for predictable, sustainable operations.</p>
                 <div class="intro-actions">
                   <button class="primary-btn js-goto-pillars">Enter platform</button>
                 </div>
@@ -508,7 +507,20 @@
     </div>
   </section>
 
-  <!-- ===== Ask Aletheia — grounded, read-only chat (right-side drawer overlay) ===== -->
+  <footer>
+    <span id="rep-footer">—</span>
+    <br><br>
+    Reference / benchmark sites built from public satellite data — not any operator’s private assets. Interpretation logic and reconciliation rules follow the Aletheia workflow. Drone example output: L. Chris Euranie ISU photogrammetry pipeline (DJI Neo · 4.56 M-point cloud).
+  </footer>
+</div>
+
+
+    </div>
+  </div>
+
+  <!-- ===== Ask Aletheia — grounded, read-only chat (right-side drawer overlay) =====
+       Kept as a direct child of <body>, OUTSIDE #aletheia-report-modal, so the modal's
+       transform doesn't trap position:fixed and the drawer/FAB stay pinned to the viewport. -->
   <aside class="ask-drawer" id="askPanel" aria-hidden="true">
     <button class="ask-close" id="askClose" type="button" aria-label="Close Ask Aletheia">&times;</button>
     <button class="ask-toggle" id="askToggle" aria-expanded="false" aria-controls="askBody" type="button">
@@ -543,17 +555,6 @@
   <button class="ask-fab" id="askFab" type="button" aria-label="Open Ask Aletheia">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12Z"/><path d="M8.5 11h7M8.5 14h4"/></svg>
   </button>
-
-  <footer>
-    <span id="rep-footer">—</span>
-    <br><br>
-    Reference / benchmark sites built from public satellite data — not any operator’s private assets. Interpretation logic and reconciliation rules follow the Aletheia workflow. Drone example output: L. Chris Euranie ISU photogrammetry pipeline (DJI Neo · 4.56 M-point cloud).
-  </footer>
-</div>
-
-
-    </div>
-  </div>
 
 </body>
 </html>
