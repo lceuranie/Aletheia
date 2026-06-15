@@ -598,7 +598,7 @@ html, body {
 .lslide-inner--intro {
   position: relative; z-index: 3;
   width: 100%;
-  max-width: 1000px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 2rem 2.2rem;
   display: flex;
