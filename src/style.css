@@ -1193,3 +1193,205 @@ html, body {
   width: 16px;
   height: 16px;
 }
+
+/* =========================================
+   PREMIUM ADMIN & PROFILE VIEW STYLING
+   ========================================= */
+
+.admin-container {
+  max-width: 1000px;
+  margin: 4rem auto;
+  padding: 3rem;
+  background: rgba(20, 22, 21, 0.45);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.4);
+  color: #F7F4EE;
+  animation: fadeUp 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+.admin-container h2 {
+  font-family: var(--serif, 'IBM Plex Serif', Georgia, serif);
+  font-size: 2.4rem;
+  font-weight: 500;
+  margin-bottom: 2rem;
+  color: #F7F4EE;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+/* Manage My Profile Specifics */
+.my-profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.profile-avatar-large {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1.5rem;
+  border: 4px solid rgba(127, 208, 160, 0.2);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.my-profile-card h3 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  color: #F7F4EE;
+}
+
+.my-profile-card p {
+  color: rgba(240, 240, 235, 0.7);
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.my-profile-card strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.my-profile-card span#my-profile-role {
+  display: inline-block;
+  background: rgba(127, 208, 160, 0.15);
+  color: #7FD0A0;
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-left: 8px;
+}
+
+/* Admin Table */
+.admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+}
+
+.admin-table th {
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(240, 240, 235, 0.6);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 1.2rem 1rem;
+  font-weight: 500;
+}
+
+.admin-table th:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+.admin-table th:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+
+.admin-table td {
+  padding: 1.2rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+  color: #F7F4EE;
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tr {
+  transition: background 0.2s ease;
+}
+.admin-table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-cell img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-cell span {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.role-select {
+  background: rgba(0, 0, 0, 0.3);
+  color: #F7F4EE;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.6rem 2.5rem 0.6rem 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: all 0.2s;
+}
+
+.role-select:hover, .role-select:focus {
+  border-color: rgba(255, 255, 255, 0.3);
+  outline: none;
+}
+
+.role-select option {
+  background: #1B1E1C;
+  color: #F7F4EE;
+}
+
+.permissions-checks label {
+  color: rgba(240, 240, 235, 0.85);
+  transition: color 0.2s;
+}
+
+.permissions-checks label:hover {
+  color: #F7F4EE;
+}
+
+.permissions-checks input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  appearance: none;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  transition: all 0.2s;
+}
+
+.permissions-checks input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.permissions-checks input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid #000;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
