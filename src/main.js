@@ -1,5 +1,6 @@
 import './style.css';
-import { auth, googleProvider } from './firebase.js';
+import { auth, googleProvider, db } from './firebase.js';
+import { doc, setDoc, getDoc, collection, getDocs, updateDoc } from 'firebase/firestore';
 import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -1105,6 +1106,7 @@ window.addEventListener('load', () => {
 
 // --- AUTHENTICATION LOGIC ---
 let currentUser = null;
+let currentUserRole = 'user'; // default
 
 function renderAuthUI(user) {
   currentUser = user;
@@ -1130,9 +1132,31 @@ function renderAuthUI(user) {
   });
 }
 
+async function syncUserToFirestore(user) {
+  if (!user) return;
+  const userRef = doc(db, 'users', user.uid);
+  const userSnap = await getDoc(userRef);
+  
+  if (!userSnap.exists()) {
+    // Create new user profile, default role is 'admin' as requested for now
+    await setDoc(userRef, {
+      uid: user.uid,
+      displayName: user.displayName,
+      email: user.email,
+      photoURL: user.photoURL,
+      role: 'admin' 
+    });
+    currentUserRole = 'admin';
+  } else {
+    // User exists, just update their current role in memory
+    currentUserRole = userSnap.data().role || 'user';
+  }
+}
+
 function handleLogin() {
-  signInWithPopup(auth, googleProvider).then((result) => {
+  signInWithPopup(auth, googleProvider).then(async (result) => {
     console.log("Logged in:", result.user);
+    await syncUserToFirestore(result.user);
     navigateTo('view-pillars');
   }).catch((error) => {
     console.error("Login Error:", error);
@@ -1156,11 +1180,86 @@ document.getElementById('close-profile-modal')?.addEventListener('click', closeP
 document.getElementById('btn-sign-out')?.addEventListener('click', () => {
   signOut(auth).then(() => {
     closeProfileModal();
+    currentUser = null;
+    currentUserRole = 'user';
     navigateTo('view-landing');
   });
 });
 
-onAuthStateChanged(auth, (user) => {
+// Profile Actions
+document.getElementById('btn-goto-my-profile')?.addEventListener('click', () => {
+  closeProfileModal();
+  document.getElementById('my-profile-avatar').src = currentUser.photoURL || 'https://via.placeholder.com/150';
+  document.getElementById('my-profile-name').textContent = currentUser.displayName || 'Unknown User';
+  document.getElementById('my-profile-email').textContent = currentUser.email || 'No email';
+  document.getElementById('my-profile-role').textContent = currentUserRole.toUpperCase();
+  navigateTo('view-my-profile');
+});
+
+document.getElementById('btn-goto-admin')?.addEventListener('click', () => {
+  closeProfileModal();
+  navigateTo('view-admin');
+  loadAdminUsers();
+});
+
+async function loadAdminUsers() {
+  const tbody = document.getElementById('admin-users-tbody');
+  tbody.innerHTML = '<tr><td colspan="3">Loading users...</td></tr>';
+  
+  try {
+    const querySnapshot = await getDocs(collection(db, "users"));
+    tbody.innerHTML = '';
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>
+          <div class="user-cell">
+            <img src="${data.photoURL || 'https://via.placeholder.com/150'}" alt="Avatar">
+            <span>${data.displayName || 'Unknown'}</span>
+          </div>
+        </td>
+        <td>${data.email || 'No email'}</td>
+        <td>
+          <select class="role-select" data-uid="${data.uid}">
+            <option value="user" ${data.role === 'user' ? 'selected' : ''}>User</option>
+            <option value="admin" ${data.role === 'admin' ? 'selected' : ''}>Admin</option>
+          </select>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Add listeners to selects
+    document.querySelectorAll('.role-select').forEach(select => {
+      select.addEventListener('change', async (e) => {
+        const uid = e.target.getAttribute('data-uid');
+        const newRole = e.target.value;
+        const userRef = doc(db, 'users', uid);
+        try {
+          await updateDoc(userRef, { role: newRole });
+          if (uid === currentUser?.uid) {
+            currentUserRole = newRole;
+          }
+        } catch (err) {
+          console.error("Failed to update role:", err);
+          alert("Error updating role. Check console.");
+        }
+      });
+    });
+
+  } catch (error) {
+    console.error("Error loading users:", error);
+    tbody.innerHTML = '<tr><td colspan="3">Error loading users. Is Firestore enabled?</td></tr>';
+  }
+}
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    await syncUserToFirestore(user);
+  } else {
+    currentUserRole = 'user';
+  }
   renderAuthUI(user);
 });
 
