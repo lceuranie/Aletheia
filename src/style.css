@@ -422,11 +422,12 @@ html, body {
   pointer-events: none;
 }
 
-#view-landing {
+#view-home {
   height: auto;
   min-height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
+  display: block; /* Overrides .view flex layout so children stack normally */
 }
 
 /* ==========================================
@@ -489,8 +490,10 @@ html, body {
    ========================================== */
 #view-home.landing {
   background: #05080A;
-  height: 100vh;
-  overflow: hidden;
+  height: auto;
+  min-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .landing-nav {
