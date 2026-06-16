@@ -554,7 +554,8 @@ html, body {
 .fx-vignette {
   position: absolute; inset: 0;
   background:
-    linear-gradient(to top, rgba(3,5,7,.94) 3%, rgba(3,5,7,.34) 40%, rgba(3,5,7,.12) 62%, rgba(3,5,7,.6) 100%),
+    radial-gradient(circle at 95% 95%, #000 0%, #000 12%, transparent 28%),
+    linear-gradient(to top, #000 0%, rgba(3,5,7,.95) 12%, rgba(3,5,7,.4) 35%, rgba(3,5,7,.12) 62%, rgba(3,5,7,.6) 100%),
     radial-gradient(120% 80% at 50% 28%, transparent 42%, rgba(3,5,7,.5) 100%);
 }
 /* slow sunrise → sunset light/colour wash sweeping across */
