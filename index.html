@@ -354,6 +354,36 @@
           </div>
         </aside>
 
+        <!-- Asset Security — intermediary "Monitoring workflow" pane. Reuses the
+             same right-pane shell (.side-panel) as the Sustainability facility
+             pane above. A pin click opens this first; only "Site monitoring" is
+             live and opens the footprint dashboard. -->
+        <aside id="asset-workflow-panel" class="side-panel hidden">
+          <div class="panel-header">
+            <h2 id="aw-name">Facility</h2>
+            <button id="aw-close" class="close-btn">&times;</button>
+          </div>
+          <div class="panel-content">
+            <div id="aw-chips" class="meta-info" style="margin-bottom: 24px;"></div>
+
+            <h3 class="aw-workflow-label">Monitoring workflow</h3>
+            <div class="aw-workflow">
+              <button id="aw-btn-site" class="aw-btn aw-btn--enabled" type="button">
+                <span class="aw-btn-label">Site monitoring</span>
+                <span class="aw-btn-go" aria-hidden="true">→</span>
+              </button>
+              <button class="aw-btn aw-btn--disabled" type="button" disabled aria-disabled="true">
+                <span class="aw-btn-label">Ground subsidence</span>
+                <span class="aw-btn-tag">Roadmap</span>
+              </button>
+              <button class="aw-btn aw-btn--disabled" type="button" disabled aria-disabled="true">
+                <span class="aw-btn-label">Maritime activity</span>
+                <span class="aw-btn-tag">Roadmap</span>
+              </button>
+            </div>
+          </div>
+        </aside>
+
       <!-- Floating Predictive Chart Panel -->
       <div id="floating-chart-panel" class="floating-panel hidden">
         <div class="panel-header">

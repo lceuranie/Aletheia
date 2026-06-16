@@ -9,7 +9,7 @@ import Chart from 'chart.js/auto';
 import { facilities, statusFor, headlineFor, matrixStateFor } from './facilities_adapter.js';
 import { initAskAletheia } from './ask_aletheia.js';
 import { openAssetDashboard } from './asset_security.js';
-import { assetSiteByNearest } from './asset_security_adapter.js';
+import { assetSiteByNearest, assetSites } from './asset_security_adapter.js';
 
 // Which pillar opened the shared compliance map. Determines what clicking a pin
 // does: 'sustainability' -> methane report; 'asset' -> Asset Security dashboard.
@@ -107,6 +107,18 @@ function setMapMode(mode) {
   const opacityPanel = document.querySelector('#view-map .opacity-panel');
   if (opacityPanel) opacityPanel.style.display = mode === 'asset' ? 'none' : '';
   if (mode === 'asset') document.getElementById('compliance-panel')?.classList.add('hidden');
+  // The Asset Security workflow pane is asset-specific; hide it in Sustainability mode.
+  if (mode !== 'asset') document.getElementById('asset-workflow-panel')?.classList.add('hidden');
+  // Swap the pin set so each pillar's pins sit at its own coordinates.
+  if (typeof sustainabilityPins !== 'undefined' && typeof assetPins !== 'undefined') {
+    if (mode === 'asset') {
+      map.removeLayer(sustainabilityPins);
+      assetPins.addTo(map);
+    } else {
+      map.removeLayer(assetPins);
+      sustainabilityPins.addTo(map);
+    }
+  }
 }
 
 document.getElementById('btn-back-pillars')?.addEventListener('click', () => navigateTo('view-pillars'));
@@ -278,6 +290,32 @@ let selectedFacility = facilities[0] || null;
 
 closeBtn.addEventListener('click', () => panel.classList.add('hidden'));
 
+// --- ASSET SECURITY: intermediary "Monitoring workflow" pane ---
+// In Asset Security mode a pin click opens this right-side pane first (reusing
+// the Sustainability facility pane's shell). Only "Site monitoring" is live —
+// it opens the footprint dashboard; the other workflows are roadmap-tagged.
+const assetWorkflowPanel = document.getElementById('asset-workflow-panel');
+let assetWorkflowSite = null;
+
+function openAssetWorkflow(site) {
+  assetWorkflowSite = site;
+  document.getElementById('aw-name').textContent = site.name;
+  document.getElementById('aw-chips').innerHTML =
+    `<span class="badge">${site.operator}</span>` +
+    `<span class="badge">${site.basin}</span>`;
+  panel.classList.add('hidden'); // the two right-pane views are mutually exclusive
+  assetWorkflowPanel?.classList.remove('hidden');
+}
+
+document.getElementById('aw-close')?.addEventListener('click', () =>
+  assetWorkflowPanel?.classList.add('hidden'));
+
+document.getElementById('aw-btn-site')?.addEventListener('click', () => {
+  if (!assetWorkflowSite) return;
+  assetWorkflowPanel?.classList.add('hidden');
+  openAssetDashboard(assetWorkflowSite);
+});
+
 // Populate + open the compliance side panel from a facility view-model.
 // All honesty framing (verdict -> status, reframed headline, method label)
 // comes from facilities_adapter.js — this only paints it.
@@ -318,29 +356,44 @@ document.getElementById('btn-close-report')?.addEventListener('click', () => {
 // basemap, each ringed by a subtle white halo (ALETHEIA_HANDOFF §4 / map request).
 const PIN_COLOR = { green: '#2E5C45', amber: '#7A5A1E' };
 
-// --- Map markers: the three real AOIs from facilities.json, coloured by verdict ---
+// The shared map carries two distinct pin sets, one per pillar:
+//   - Sustainability pins come from facilities.json, coloured by verdict.
+//   - Asset Security pins come from asset_security.json so each pin sits over the
+//     monitored area its imagery actually covers (and the click zooms there too).
+// Only one layer is on the map at a time; setMapMode() swaps them.
+const sustainabilityPins = L.layerGroup();
+const assetPins = L.layerGroup();
+
+// --- Sustainability markers: the real AOIs from facilities.json, coloured by verdict ---
 facilities.forEach(f => {
   const fill = PIN_COLOR[statusFor(f.verdict).tone] || '#7A5A1E';
   const marker = L.circleMarker([f.lat, f.lon], {
     radius: 9, color: '#FFFFFF', weight: 3, fillColor: fill, fillOpacity: 1, className: 'aoi-pin'
-  }).addTo(map);
+  });
   marker.bindTooltip(`<b>${f.name}</b><br>${f.basisLabel}`);
   marker.on('click', () => {
-    if (mapMode === 'asset') {
-      // Asset Security flow: zoom to the matched site's own lat/lon, then open
-      // the per-facility footprint dashboard. (Pins come from facilities.json;
-      // we match to the Asset Security manifest site by nearest coordinate.)
-      const site = assetSiteByNearest(f.lat, f.lon);
-      if (site) {
-        map.setView([site.lat, site.lon], 12, { animate: true });
-        openAssetDashboard(site);
-      }
-      return;
-    }
     map.setView([f.lat, f.lon], f.isBasin ? 7 : 9, { animate: true });
     selectFacility(f);
   });
+  marker.addTo(sustainabilityPins);
 });
+
+// --- Asset Security markers: placed from the asset_security.json lat/lon so the
+// pin overlays the monitored footprint, and clicking zooms to that same point. ---
+assetSites.forEach(site => {
+  const marker = L.circleMarker([site.lat, site.lon], {
+    radius: 9, color: '#FFFFFF', weight: 3, fillColor: '#7A5A1E', fillOpacity: 1, className: 'aoi-pin'
+  });
+  marker.bindTooltip(`<b>${site.name}</b><br>${site.basin}`);
+  marker.on('click', () => {
+    map.setView([site.lat, site.lon], 12, { animate: true });
+    openAssetWorkflow(site);
+  });
+  marker.addTo(assetPins);
+});
+
+// Default to the Sustainability pin set; setMapMode() swaps in the asset pins.
+sustainabilityPins.addTo(map);
 
 // (Basemap applied above via theme toggle logic)
 
