@@ -874,3 +874,74 @@
 @media (prefers-reduced-motion: reduce) {
   #asset-modal { transition: none; }
 }
+
+/* ---------------------------------------------------------------------------
+   Asset Security — intermediary "Monitoring workflow" pane.
+   Sits inside the shared .side-panel right-pane shell (header + meta tags are
+   reused as-is). These rules cover only the workflow label and the three
+   stacked workflow buttons. The two disabled buttons are deliberately greyed
+   and "Roadmap"-tagged so they read as planned, not broken.
+   --------------------------------------------------------------------------- */
+.aw-workflow-label {
+  font-family: var(--body, 'IBM Plex Sans', sans-serif);
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--ink-3);
+  margin: 0 0 12px;
+  padding: 0;
+  border: 0;             /* override .side-panel h3's border-bottom */
+}
+.aw-workflow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.aw-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
+  font-family: var(--body, 'IBM Plex Sans', sans-serif);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 13px 14px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+/* Enabled — the only navigating action; mirrors the primary report button. */
+.aw-btn--enabled {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  cursor: pointer;
+}
+.aw-btn--enabled:hover {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+.aw-btn--enabled .aw-btn-go { flex: none; font-size: 16px; line-height: 1; }
+/* Disabled — intentionally planned, not broken: greyed + "Roadmap" tag. */
+.aw-btn--disabled {
+  background: var(--inset);
+  color: var(--ink-3);
+  border-color: var(--hairline);
+  cursor: not-allowed;
+}
+.aw-btn-tag {
+  flex: none;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 5px;
+  padding: 3px 7px;
+}
