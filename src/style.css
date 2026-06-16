@@ -628,15 +628,22 @@ html, body {
 }
 @keyframes letterReveal { to { opacity: 1; transform: translateY(0); } }
 .intro-tagline {
-  font-family: var(--serif, 'IBM Plex Serif', Georgia, serif);
-  font-style: italic;
+  font-family: 'Newsreader', var(--serif, 'IBM Plex Serif', Georgia, serif), Georgia, serif;
+  font-style: normal;
   font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   font-size: clamp(1.1rem, 2.4vw, 1.7rem);
   color: #E7D9B8;
   margin: 1.4rem 0 0;
   opacity: 0;
   animation: fadeUp 1s ease forwards;
   animation-delay: 1.05s;
+}
+/* Editorial italic accent on the closing phrase of the hero tagline */
+.intro-tagline .tagline-accent {
+  font-style: italic;
+  color: var(--rose);
 }
 .intro-actions {
   margin-top: 2.2rem;
