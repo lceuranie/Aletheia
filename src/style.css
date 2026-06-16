@@ -510,6 +510,17 @@ html, body {
   letter-spacing: 0.2em;
   color: #F4F1EC;
 }
+/* Product & Services link reads on dark */
+.landing-nav-link {
+  font-family: var(--mono, 'IBM Plex Mono', monospace);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: rgba(244,241,236,.82);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .18s ease;
+}
+.landing-nav-link:hover { color: #F4F1EC; }
 /* Login / CTA buttons read on dark */
 .landing-login.primary-btn.outline {
   border-color: rgba(255,255,255,.5);
