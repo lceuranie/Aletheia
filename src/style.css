@@ -628,12 +628,17 @@ html, body {
 }
 @keyframes letterReveal { to { opacity: 1; transform: translateY(0); } }
 .intro-tagline {
+  /* Italic-accent colour for "sustainable operations" — one-line swap to compare:
+     (a) inherit  → same off-white as the rest (italic alone is the accent)
+     (b) var(--accent) → brand teal/green (matches "Enter platform" button)
+     (c) #D9694A  → brighter, more saturated terracotta */
+  --tagline-accent: inherit;
   font-family: 'Newsreader', var(--serif, 'IBM Plex Serif', Georgia, serif), Georgia, serif;
   font-style: normal;
   font-weight: 400;
-  line-height: 1.05;
+  line-height: 1.4;
   letter-spacing: -0.02em;
-  font-size: clamp(1.1rem, 2.4vw, 1.7rem);
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
   color: #E7D9B8;
   margin: 1.4rem 0 0;
   opacity: 0;
@@ -642,8 +647,8 @@ html, body {
 }
 /* Editorial italic accent on the closing phrase of the hero tagline */
 .intro-tagline .tagline-accent {
-  font-style: italic;
-  color: var(--rose);
+  font-style: normal;
+  color: var(--tagline-accent);
 }
 .intro-actions {
   margin-top: 2.2rem;
