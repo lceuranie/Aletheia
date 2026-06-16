@@ -78,6 +78,10 @@ document.querySelectorAll('.btn-goto-home').forEach(btn => {
   btn.addEventListener('click', () => navigateTo('view-home'));
 });
 
+document.querySelectorAll('.btn-back-dashboard').forEach(btn => {
+  btn.addEventListener('click', () => navigateTo('view-pillars'));
+});
+
 document.getElementById('btn-goto-map')?.addEventListener('click', () => {
   setMapMode('sustainability');
   navigateTo('view-map');
