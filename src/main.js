@@ -1409,15 +1409,19 @@ async function loadAdminUsers() {
 }
 
 function renderPillarsDashboard() {
-  // Operational Efficiency Pillar (index 0) - usually "Coming soon" but we can block it
-  const effCard = document.querySelector('.pillars-grid .pillar-card:nth-child(1)');
+  // Operational Efficiency Pillar
+  const effCard = document.getElementById('btn-goto-operational');
   if (effCard) {
     if (!currentUserPermissions.operationalEfficiency) {
       effCard.classList.add('is-soon');
       effCard.classList.remove('is-available');
       effCard.querySelector('.pillar-state').textContent = 'Locked 🔒';
+      effCard.style.pointerEvents = 'none';
     } else {
-      effCard.querySelector('.pillar-state').textContent = 'Coming soon';
+      effCard.classList.remove('is-soon');
+      effCard.classList.add('is-available');
+      effCard.querySelector('.pillar-state').textContent = 'Open workspace →';
+      effCard.style.pointerEvents = 'auto';
     }
   }
 
