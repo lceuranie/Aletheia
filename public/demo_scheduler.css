@@ -1,0 +1,288 @@
+/* Demo Scheduler Modal Styles */
+
+.ds-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(5, 8, 10, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  color: rgba(255,255,255,0.9);
+}
+
+.ds-modal-overlay.ds-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ds-modal-container {
+  background: #0A0D10;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  transform: translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-modal-overlay.ds-active .ds-modal-container {
+  transform: translateY(0);
+}
+
+.ds-header {
+  padding: 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ds-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.ds-close-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.ds-close-btn:hover {
+  color: white;
+}
+
+.ds-body {
+  padding: 24px;
+  flex: 1;
+}
+
+/* Step 1: Calendar */
+.ds-view {
+  display: none;
+  animation: dsFadeIn 0.3s ease;
+}
+
+.ds-view.ds-active {
+  display: block;
+}
+
+@keyframes dsFadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ds-month-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.ds-month-nav button {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  border-radius: 6px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ds-month-nav button:hover:not(:disabled) {
+  background: rgba(255,255,255,0.05);
+}
+
+.ds-month-nav button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.ds-month-label {
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.ds-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 8px;
+}
+
+.ds-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.ds-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  color: rgba(255,255,255,0.8);
+  transition: all 0.2s;
+}
+
+.ds-day:not(.ds-disabled):hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.1);
+}
+
+.ds-day.ds-disabled {
+  color: rgba(255,255,255,0.2);
+  cursor: not-allowed;
+  background: transparent;
+}
+
+.ds-day.ds-empty {
+  visibility: hidden;
+}
+
+.ds-day.ds-selected {
+  background: white;
+  color: #0A0D10;
+  font-weight: 600;
+}
+
+/* Step 2: Time Slots */
+.ds-back-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.ds-back-btn:hover {
+  color: white;
+}
+
+.ds-date-display {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+.ds-slots-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ds-slot-btn {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.9);
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.ds-slot-btn:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.2);
+}
+
+/* Step 3: Form */
+.ds-form-group {
+  margin-bottom: 16px;
+}
+
+.ds-form-group label {
+  display: block;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+.ds-input {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  padding: 12px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.ds-input:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.05);
+}
+
+textarea.ds-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.ds-submit-btn {
+  width: 100%;
+  background: white;
+  color: #0A0D10;
+  border: none;
+  padding: 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: opacity 0.2s;
+}
+
+.ds-submit-btn:hover {
+  opacity: 0.9;
+}
+
+.ds-helper-text {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+  margin-top: 16px;
+  line-height: 1.4;
+}
