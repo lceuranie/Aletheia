@@ -1458,6 +1458,11 @@ onAuthStateChanged(auth, async (user) => {
   if (user) {
     await syncUserToFirestore(user);
     renderPillarsDashboard();
+    // Auto-navigate to dashboard if they are logged in and on the landing page
+    const activeView = document.querySelector('.view.active');
+    if (activeView && activeView.id === 'view-home') {
+      navigateTo('view-pillars');
+    }
   } else {
     currentUserRole = 'user';
   }
