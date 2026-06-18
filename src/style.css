@@ -1653,10 +1653,19 @@ html, body {
 
 /* Interactive Hover Effects */
 .parallax-card {
-  transition: scale 0.5s cubic-bezier(0.25, 0.8, 0.25, 1),
-              box-shadow 0.5s ease, 
-              border-color 0.3s ease;
-  will-change: scale;
+  transition: translate 0.6s cubic-bezier(0.25, 1, 0.5, 1),
+              scale 0.6s cubic-bezier(0.25, 1, 0.5, 1),
+              box-shadow 0.6s ease, 
+              border-color 0.4s ease;
+  will-change: translate, scale;
+}
+
+.images-side:hover .img-back {
+  translate: -15% -5%;
+}
+
+.images-side:hover .img-front {
+  translate: 15% 5%;
 }
 
 .parallax-card:hover {
