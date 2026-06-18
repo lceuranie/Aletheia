@@ -1694,21 +1694,21 @@ html, body {
 }
 
 .images-side:not(.three-cards):hover .img-back {
-  translate: -15% -20%;
+  translate: -20% -45%;
 }
 
 .images-side:not(.three-cards):hover .img-front {
-  translate: 20% 20%;
+  translate: 25% 45%;
 }
 
 .three-cards:hover .img-back {
-  translate: -80% -35%;
+  translate: -88% -38%;
 }
 .three-cards:hover .img-middle {
   translate: 0% 0%;
 }
 .three-cards:hover .img-front {
-  translate: 80% 35%;
+  translate: 88% 38%;
 }
 
 .parallax-card:hover {
