@@ -1586,7 +1586,7 @@ html, body {
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.2); /* Adjust opacity here */
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.85) 100%);
   z-index: 0;
 }
 
@@ -1653,33 +1653,27 @@ html, body {
 
 /* Interactive Hover Separation Effects */
 .parallax-card {
-  transition: translate 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), 
-              scale 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
-              rotate 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
-              box-shadow 0.2s ease, 
-              border-color 0.2s ease,
-              z-index 0s 0.2s; /* delay z-index reset on mouse-out */
-  will-change: translate, scale, rotate;
+  transition: translate 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), 
+              scale 0.5s cubic-bezier(0.25, 0.8, 0.25, 1),
+              box-shadow 0.5s ease, 
+              border-color 0.3s ease;
+  will-change: translate, scale;
 }
 
 .images-side:hover .img-back {
-  translate: -50px -10px;
-  rotate: -3deg;
+  translate: -20px -20px;
   box-shadow: -15px 25px 60px rgba(0, 0, 0, 0.7);
 }
 
 .images-side:hover .img-front {
-  translate: 50px 10px;
-  rotate: 3deg;
+  translate: 20px 20px;
   box-shadow: 15px 25px 60px rgba(0, 0, 0, 0.7);
 }
 
 .parallax-card:hover {
-  scale: 1.05;
-  rotate: 0deg !important; /* straighten out when directly hovered */
+  scale: 1.03;
   border-color: rgba(255, 255, 255, 0.4);
-  z-index: 10 !important; 
-  transition: z-index 0s 0s, translate 0.2s ease-out, scale 0.2s ease-out, rotate 0.2s ease-out; /* instant z-index jump on hover */
+  z-index: 10 !important; /* Bring hovered card to the absolute front */
 }
 
 @media (max-width: 900px) {
