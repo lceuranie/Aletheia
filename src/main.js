@@ -557,10 +557,11 @@ const firmsLayer = L.tileLayer.wms('https://gibs.earthdata.nasa.gov/wms/epsg3857
   attribution: '&copy; <a href="https://firms.modaps.eosdis.nasa.gov/">NASA FIRMS</a> / GIBS'
 });
 
-// Sentinel-1 SAR WMS layer (Fallback to Esri Dark Gray Base for visual distinction in Demo)
-const sarLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-  attribution: '&copy; <a href="https://www.esri.com/">Esri</a> &mdash; Esri, DeLorme, NAVTEQ',
-  maxZoom: 16
+// Sentinel-1 SAR WMS layer (Simulated with inverted grayscale World Imagery for Demo)
+const sarLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: '&copy; <a href="https://www.esri.com/">Esri</a> &mdash; Simulated SAR via Esri',
+  maxZoom: 16,
+  className: 'sar-sim-layer'
 });
 
 // Set up Layer Control (Checkbox/Radio toggle)

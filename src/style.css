@@ -643,6 +643,18 @@ html, body {
 }
 
 /* ---- carousel mechanics ---- */
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 160px;
+}
+
+/* Simulated SAR Layer effect */
+.sar-sim-layer {
+  filter: grayscale(100%) invert(100%) contrast(150%) brightness(120%);
+  mix-blend-mode: screen; /* Helps it overlay beautifully on dark map */
+}
+
 .carousel { position: relative; width: 100%; height: 100vh; overflow: hidden; }
 .carousel-track {
   display: flex;
