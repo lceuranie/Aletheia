@@ -580,9 +580,29 @@ document.getElementById('toggle-planet')?.addEventListener('change', (e) => {
 document.getElementById('toggle-vnf')?.addEventListener('change', (e) => {
   e.target.checked ? firmsLayer.addTo(map) : map.removeLayer(firmsLayer);
 });
+
+// --- Simulated Oil Spill Detection for SAR ---
+const oilSpillMarker = L.circle([28.45, -94.15], {
+  color: '#FF3366',
+  fillColor: '#FF3366',
+  fillOpacity: 0.2,
+  weight: 3,
+  radius: 3500,
+  className: 'pulse-ring'
+}).bindTooltip('<b>Detected Anomaly</b><br>Potential Oil Spill Signature', { permanent: true, direction: 'top', className: 'sar-tooltip' });
+
 document.getElementById('toggle-sar')?.addEventListener('change', (e) => {
-  e.target.checked ? sarLayer.addTo(map) : map.removeLayer(sarLayer);
+  if (e.target.checked) {
+    sarLayer.addTo(map);
+    oilSpillMarker.addTo(map);
+    // Pan to the oil spill so they know where to go
+    map.flyTo([28.45, -94.15], 12, { animate: true, duration: 1.5 });
+  } else {
+    map.removeLayer(sarLayer);
+    map.removeLayer(oilSpillMarker);
+  }
 });
+
 document.getElementById('toggle-tropomi')?.addEventListener('change', (e) => {
   e.target.checked ? methaneLayer.addTo(map) : map.removeLayer(methaneLayer);
 });

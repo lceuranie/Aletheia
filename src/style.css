@@ -655,6 +655,26 @@ html, body {
   mix-blend-mode: screen; /* Helps it overlay beautifully on dark map */
 }
 
+/* Simulated Oil Spill Marker */
+.pulse-ring {
+  animation: pulse-ring 2s infinite ease-out;
+}
+
+@keyframes pulse-ring {
+  0% { stroke-width: 0px; stroke-opacity: 1; fill-opacity: 0.6; }
+  100% { stroke-width: 15px; stroke-opacity: 0; fill-opacity: 0.1; }
+}
+
+.sar-tooltip {
+  background: rgba(12, 17, 22, 0.9);
+  border: 1px solid #FF3366;
+  color: #E2E8F0;
+  font-family: 'Inter', -apple-system, sans-serif;
+  box-shadow: 0 0 15px rgba(255, 51, 102, 0.4);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
 .carousel { position: relative; width: 100%; height: 100vh; overflow: hidden; }
 .carousel-track {
   display: flex;
