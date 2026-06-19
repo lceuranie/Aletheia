@@ -359,17 +359,89 @@ document.getElementById('aw-btn-site')?.addEventListener('click', () => {
 function renderPanel(f) {
   const status = statusFor(f.verdict);
   const color = STATUS_COLOR[status.tone] || '#F2B53B';
-  document.getElementById('cp-name').textContent = f.name;
-  document.getElementById('cp-chips').innerHTML =
-    `<span class="badge">${f.operator}</span>` +
-    `<span class="badge">${f.region}</span>` +
-    `<span class="badge">${f.basisLabel}</span>`;
-  document.getElementById('cp-status-dot').style.background = color;
-  const word = document.getElementById('cp-status-word');
-  word.textContent = status.word;
-  word.style.color = color;
-  document.getElementById('cp-headline').innerHTML = headlineFor(f);
-  panel.classList.remove('hidden');
+
+  ['cp', 'oe-cp'].forEach(prefix => {
+    const nameEl = document.getElementById(`${prefix}-name`);
+    if (!nameEl) return;
+    
+    nameEl.textContent = f.name;
+    document.getElementById(`${prefix}-chips`).innerHTML =
+      `<span class="badge">${f.operator}</span>` +
+      `<span class="badge">${f.region}</span>` +
+      `<span class="badge">${f.basisLabel}</span>`;
+      
+    document.getElementById(`${prefix}-status-dot`).style.background = color;
+    const word = document.getElementById(`${prefix}-status-word`);
+    word.textContent = status.word;
+    word.style.color = color;
+    document.getElementById(`${prefix}-headline`).innerHTML = headlineFor(f);
+
+    // Populate Metrics
+    const elObs = document.getElementById(`${prefix}-metric-obs`);
+    const elBkgd = document.getElementById(`${prefix}-metric-bkgd`);
+    const elPct = document.getElementById(`${prefix}-metric-pct`);
+    const elFlare = document.getElementById(`${prefix}-metric-flare`);
+    const elNote = document.getElementById(`${prefix}-note`);
+    
+    if (elObs) elObs.textContent = f.siteCh4 != null ? `${f.siteCh4.toFixed(0)} ppb` : '—';
+    if (elBkgd) elBkgd.textContent = f.bkgdCh4 != null ? `${f.bkgdCh4.toFixed(0)} ppb` : '—';
+    if (elPct) elPct.textContent = f.excessPct != null ? `${f.excessPct > 0 ? '+' : ''}${f.excessPct}%` : '—';
+    if (elFlare) elFlare.textContent = f.flaringBcm != null ? `${f.flaringBcm} Bcm` : '—';
+    if (elNote) elNote.innerHTML = f.note || 'No specific AI insight generated for this location.';
+
+    // Populate Chart
+    const canvas = document.getElementById(`${prefix}-methane-chart`);
+    if (canvas && f.trajectory && f.trajectory.length > 0) {
+      if (canvas.chartInstance) {
+        canvas.chartInstance.destroy();
+      }
+      const obsLabels = f.trajectory.map(t => t.month);
+      const obsData = f.trajectory.map(t => t.ch4);
+      const bkgd = f.bkgdCh4;
+
+      canvas.chartInstance = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: obsLabels,
+          datasets: [{
+            label: 'Observed',
+            data: obsData,
+            borderColor: '#5FD4CC',
+            backgroundColor: 'transparent',
+            tension: 0.3,
+            borderWidth: 2,
+            pointRadius: 0
+          }, {
+            label: 'Background',
+            data: Array(obsLabels.length).fill(bkgd),
+            borderColor: 'rgba(255, 255, 255, 0.3)',
+            borderDash: [4, 4],
+            borderWidth: 1,
+            pointRadius: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { display: false },
+            y: { 
+              display: true, 
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#6B7B8C', font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+  });
+
+  const panel = document.getElementById('compliance-panel');
+  if (panel && mapMode === 'sustainability') panel.classList.remove('hidden');
+  
+  const oePanel = document.getElementById('operational-panel');
+  if (oePanel && mapMode === 'operational') oePanel.classList.remove('hidden');
 }
 
 function selectFacility(f) {
